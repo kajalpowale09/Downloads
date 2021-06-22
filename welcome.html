@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html lang="en">
+<head>
+<title>Bootstrap Example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script
+src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+<h2>Vertical (basic) form</h2>
+<form id="empForm" method="post">
+<div class="form-group">
+<span><label for="email">Email:</label> <label id="email">
+</label></span>
+<input type="Email" class="form-control" name="email"
+placeholder="Enter Email" required>
+</div>
+    <div class="form-group">
+<label for="name">Employee Name:</label>
+<input type="text" class="form-control" id="name"
+placeholder="Enter Employee Name" name="name">
+</div>
+<div class="form-group">
+<label for="mobile">Mobile:</label>
+<input type="mobile" class="form-control" id="mobile"
+placeholder="Enter mobile" name="mobile">
+</div>
+<input type="button" class="btn btn-primary" id="empSave" value="Save"
+onclick="saveEmployee();">
+</form>
+</div>
+<script>
+function validateAndGetFormData() {
+var email = $("#email").val();
+if (email === "") {
+alert("email  Required Value");
+$("#email").focus();
+return "";
+}
+var name = $("#name").val();
+if (name === "") {
+alert("Employee Name is Required Value");
+$("#name").focus();
+return "";
+}
+var mobile = $("#mobile").val();
+if (mobile === "") {
+alert("mobile is Required Value");
+$("#mobile").focus();
+return "";
+}
+var jsonStrObj = {
+email: email,
+name: name,
+mobile: mobile,
+};
+return JSON.stringify(jsonStrObj)
+}
+// This method is used to create PUT Json request.
+function createPUTRequest(connToken, jsonObj, dbName, relName) {
+var putRequest = "{\n"
++ "\"token\" : \""
++ connToken
++ "\","
++ "\"dbName\": \""
++ dbName
++ "\",\n" + "\"cmd\" : \"PUT\",\n"
++ "\"rel\" : \""
++ relName + "\","
++ "\"jsonStr\": \n"
++ jsonObj
++ "\n"
++ "}";
+return putRequest;
+}
+function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+var url = dbBaseUrl + apiEndPointUrl;
+var jsonObj;
+$.post(url, reqString, function (result) {
+jsonObj = JSON.parse(result);
+}).fail(function (result) {
+var dataJsonObj = result.responseText;
+jsonObj = JSON.parse(dataJsonObj);
+});
+return jsonObj;
+}
+function resetForm() {
+$("#email").val("")
+$("#name").val("");
+$("#mobile").val("");
+
+}
+
+
+    var jsonStr = validateAndGetFormData();
+if (jsonStr === "") {
+return;
+}
+var putReqStr = createPUTRequest("90936861|-31948784479254024|90932362",
+jsonStr, "Employee", "emp_rel");
+alert(putReqStr);
+jQuery.ajaxSetup({async: false});
+var resultObj = executeCommand(putReqStr,
+"http://api.login2explore.com:5577", "/api/iml");
+alert(JSON.stringify(resultObj));
+jQuery.ajaxSetup({async: true});
+resetForm();
+
+</script>
+</body>
+</html>
